@@ -1,4 +1,4 @@
-package com.example.textit4.ui.theme
+package com.example.textit.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
