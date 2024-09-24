@@ -1,17 +1,19 @@
 package com.example.textet
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.textet.adapter.NoteAdapter
-import com.example.textet.model.Note
+import com.example.textit.adapter.NoteAdapter
+import com.example.textit.model.Note
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,87 +26,90 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonDelete: Button
     private lateinit var recyclerView: RecyclerView
 
+    private val sharedPrefFile = "com.example.textit.notes"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Инициализация списка заметок
-        noteList = mutableListOf()
+        // Загружаем заметки из SharedPreferences
+        noteList = loadNotes()
 
-        // Инициализация адаптера и RecyclerView
-        noteAdapter = NoteAdapter(noteList, this)
+        noteAdapter = NoteAdapter(noteList)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = noteAdapter
 
-        // Инициализация полей ввода и кнопок
+        searchText = findViewById(R.id.searchText)
         noteTextInput = findViewById(R.id.noteText)
         buttonSave = findViewById(R.id.buttonSave)
         buttonShare = findViewById(R.id.buttonShare)
         buttonDelete = findViewById(R.id.buttonDelete)
-        searchText = findViewById(R.id.searchText)
 
-        // Логика для сохранения заметки
+        // Логика сохранения заметки
         buttonSave.setOnClickListener {
-            val text = noteTextInput.text.toString().trim()
-
-            if (text.isNotEmpty()) {
-                val newNote = Note(text)
+            val content = noteTextInput.text.toString()
+            if (content.isNotEmpty()) {
+                val newNote = Note("Заметка", content)
                 noteList.add(newNote)
                 noteAdapter.updateList(noteList)
+                saveNotes() // Сохраняем заметки при добавлении новой
                 noteTextInput.text.clear()
-                Toast.makeText(this, "Заметка сохранена", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Введите текст заметки", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Логика для отправки заметки
+        // Логика для кнопки "Поделиться"
         buttonShare.setOnClickListener {
-            val selectedNote = noteAdapter.getSelectedNote()
-
-            if (selectedNote != null) {
-                val sendIntent = Intent().apply {
+            val content = noteTextInput.text.toString()
+            if (content.isNotEmpty()) {
+                val intent = Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, selectedNote.text)
+                    putExtra(Intent.EXTRA_TEXT, content)
                     type = "text/plain"
                 }
-                startActivity(Intent.createChooser(sendIntent, "Поделиться заметкой"))
-            } else {
-                Toast.makeText(this, "Выберите заметку для отправки", Toast.LENGTH_SHORT).show()
+                startActivity(Intent.createChooser(intent, "Поделиться заметкой"))
             }
         }
 
-        // Логика для удаления заметки
+        // Логика для кнопки "Удалить"
         buttonDelete.setOnClickListener {
-            val selectedNote = noteAdapter.getSelectedNote()
-
-            if (selectedNote != null) {
-                noteList.remove(selectedNote)
-                noteAdapter.updateList(noteList)
-                Toast.makeText(this, "Заметка удалена", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Выберите заметку для удаления", Toast.LENGTH_SHORT).show()
-            }
+            val content = noteTextInput.text.toString()
+            noteList.removeIf { it.content == content }
+            noteAdapter.updateList(noteList)
+            saveNotes() // Сохраняем изменения после удаления
         }
 
-        // Логика поиска
+        // Логика для поиска заметок
         searchText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterNotes(s.toString())
+                val filteredList = noteList.filter { it.content.contains(s.toString(), true) }
+                noteAdapter.updateList(filteredList)
             }
         })
     }
 
-    // Метод для фильтрации заметок
-    private fun filterNotes(query: String) {
-        val filteredList = noteList.filter {
-            it.text.contains(query, ignoreCase = true)
+    // Метод для сохранения заметок в SharedPreferences
+    private fun saveNotes() {
+        val sharedPreferences = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(noteList)
+        editor.putString("notes", json)
+        editor.apply()
+    }
+
+    // Метод для загрузки заметок из SharedPreferences
+    private fun loadNotes(): MutableList<Note> {
+        val sharedPreferences = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPreferences.getString("notes", null)
+        val type = object : TypeToken<MutableList<Note>>() {}.type
+        return if (json != null) {
+            gson.fromJson(json, type)
+        } else {
+            mutableListOf()
         }
-        noteAdapter.updateList(filteredList)
     }
 }
