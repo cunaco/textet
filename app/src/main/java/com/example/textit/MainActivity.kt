@@ -10,8 +10,8 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.textit.adapter.NoteAdapter
-import com.example.textit.model.Note
+import com.example.textet.adapter.NoteAdapter
+import com.example.textet.model.Note
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonDelete: Button
     private lateinit var recyclerView: RecyclerView
 
-    private val sharedPrefFile = "com.example.textit.notes"
+    private val sharedPrefFile = "com.example.textet.notes"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
