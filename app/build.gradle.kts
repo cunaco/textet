@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.textit"
+    namespace = "com.example.textet"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.textit"
+        applicationId = "com.example.textet"
         minSdk = 30
         targetSdk = 34
         versionCode = 1

@@ -1,4 +1,4 @@
-package com.example.textit
+package com.example.textet
 
 import org.junit.Test
 

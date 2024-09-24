@@ -1,4 +1,4 @@
-package com.example.textit
+package com.example.textet
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.textit.adapter.NoteAdapter
-import com.example.textit.model.Note
+import com.example.textet.adapter.NoteAdapter
+import com.example.textet.model.Note
 
 class MainActivity : AppCompatActivity() {
 

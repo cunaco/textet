@@ -1,13 +1,13 @@
-package com.example.textit.adapter
+package com.example.textet.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.textit.MainActivity
-import com.example.textit.R
-import com.example.textit.model.Note
+import com.example.textet.MainActivity
+import com.example.textet.R
+import com.example.textet.model.Note
 
 class NoteAdapter(
     private var noteList: List<Note>,

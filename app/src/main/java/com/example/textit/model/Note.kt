@@ -1,4 +1,4 @@
-package com.example.textit.model
+package com.example.textet.model
 
 data class Note(
     val text: String

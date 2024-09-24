@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "textit"
+rootProject.name = "textet"
 include(":app")
